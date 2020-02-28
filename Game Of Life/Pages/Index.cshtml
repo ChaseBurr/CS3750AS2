@@ -8,20 +8,53 @@
     canvas {
         background: white;
         border: 1px solid black;
-        width:600px;
-        height:600px;
     }
 </style>
 
 <div class="text-center">
     <h1 class="display-4">Game Of Life</h1>
-    <canvas id="screen">
+    <canvas id="board">
         Canvas not supported <!-- Only shows if the browser doesn't support canvas-->
     </canvas>
 </div>
 
 <script>
-    export default {
-        props: [ '']
+    const canvas = document.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 600;
+    canvas.height = 600;
+    const cols = 16;
+    const rows = 16;
+    const resolution = 10;
+
+    function buildGrid() {
+        return new Array(cols).fill(null)
+        .map(() => new Array(rows).fill(null)
+        .map(() => Math.floor(Math.random() * 2)));
     }
+
+    var grid = buildGrid();
+    requestAnimationFrame(update);
+    function update() {
+      grid = nextGen(grid);
+      render(grid);
+      requestAnimationFrame(update);
+    }
+
+    function render(grid) {
+        for (let col = 0; col < grid.length; col++) {
+            for (let row = 0; row < grid[col].length; row++) {
+                const cell = grid[col][row];
+
+                ctx.beginPath();
+                ctx.rect(col * resolution, row * resolution, resolution, resolution);
+                ctx.fillStyle = cell ? 'black' : 'white';
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+    }
+
+    update();
+
 </script>
