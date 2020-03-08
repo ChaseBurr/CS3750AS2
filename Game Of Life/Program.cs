@@ -11,6 +11,13 @@ namespace Game_Of_Life
 {
     public class Program
     {
+        /// <summary>
+        /// Checks for Neighbors
+        /// </summary>
+        public static void IsNeighbor()
+        {
+
+        }
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

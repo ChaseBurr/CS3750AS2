@@ -1,10 +1,15 @@
 ﻿let canvas, ctx, tileSize;
 let tiles = [];
 
+let bw = bh = 800;
+
 window.addEventListener('load', function () {
     canvas = document.getElementById('board');
     canvas.width = canvas.height = 800;
+    canvas.addEventListener('mousedown', onDown, false);
+
     ctx = canvas.getContext('2d');
+
     tileSize = canvas.width / 16;
     tiles.push(new tile(10, 10, 255, 0, 0));
     tiles.push(new tile(5, 10, 255, 0, 0));
@@ -14,9 +19,31 @@ window.addEventListener('load', function () {
 });
 
 function drawGrid() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < tiles.length; i++) tiles[i].draw(ctx);
+    // Draw Vertical lines
+    for (let x = 0; x <= bw; x += 40) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, bh);
+    }
+
+    // Draw Horizontal lines
+    for (let x = 0; x <= bh; x += 40) {
+        ctx.moveTo(0, x);
+        ctx.lineTo(bw, x);
+    }
+
+    // Set color and display lines
+    ctx.strokeStyle = "black";
+    ctx.stroke();
 }
+
+// Grabs X and Y cords
+function onDown(event) {
+    let cx = event.pageX;
+    let cy = event.pageY;
+
+    alert("X: " + cx + ' Y: ' + cy);
+}
+
 
 class tile {
     constructor(x, y, red, green, blue) {

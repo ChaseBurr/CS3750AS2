@@ -5,20 +5,22 @@
 }
 
 <style>
+
     canvas {
         background: white;
-        border: 1px solid black;
+        /*border: 1px solid black;*/
     }
 </style>
 
 <div class="text-center">
     <h1 class="display-4">Game Of Life</h1>
-    <canvas id="board">
-        Canvas not supported <!-- Only shows if the browser doesn't support canvas-->
-    </canvas>
-	<button id="sendButton"></button>
+    <div id="boarddiv">
+        <canvas id="board">Canvas not supported</canvas>
+</div>
+	@*<button id="sendButton"></button>*@
 </div>
 
 <script src="~/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/gameOfLIfeCanvas.js"></script>
-<script src="~/js/Game.js"></script>
+@*<script src="~/js/Game.js"></script>*@
+@*<script src="~/js/gameoflife.js"></script>*@
