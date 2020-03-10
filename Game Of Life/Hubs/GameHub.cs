@@ -9,5 +9,10 @@ namespace SignalRGame.Hubs
         {
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
+
+        public static void main()
+        {
+
+        }
     }
 }
