@@ -1,7 +1,16 @@
-﻿let canvas, ctx, tileSize;
+﻿"use strict";
+
+var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+
+connection.start().then(function () {
+    console.log("connected");
+});
+
+let canvas, ctx, tileSize;
 let tiles = [];
 
-let bw = bh = 800;
+let bw, bh;
+bw = bh = 800;
 
 window.addEventListener('load', function () {
     canvas = document.getElementById('board');
@@ -11,11 +20,16 @@ window.addEventListener('load', function () {
     ctx = canvas.getContext('2d');
 
     tileSize = canvas.width / 16;
-    tiles.push(new tile(10, 10, 255, 0, 0));
+    /*tiles.push(new tile(10, 10, 255, 0, 0));
     tiles.push(new tile(5, 10, 255, 0, 0));
-    tiles.push(new tile(5, 5, 0, 255, 255));
+    tiles.push(new tile(5, 5, 0, 255, 255));*/
     // tiles.push(new tile(5, 10, 300));
     drawGrid();
+});
+
+connection.on("AddTile", (x, y, r, g, b) => {
+    tiles.push(new tile(x, y, r, g, b));
+    console(tiles);
 });
 
 function drawGrid() {
@@ -38,10 +52,11 @@ function drawGrid() {
 
 // Grabs X and Y cords
 function onDown(event) {
-    let cx = event.pageX;
+    let cx = event.pageX - ((window.innerWidth - canvas.width) / 2);
     let cy = event.pageY;
 
-    alert("X: " + cx + ' Y: ' + cy);
+    /*alert("X: " + cx + ' Y: ' + cy);*/
+    connection.invoke("SendNewTiles", 1, 1, 255, 255, 255);
 }
 
 
@@ -70,3 +85,5 @@ class tile {
         };
     }
 }
+
+
