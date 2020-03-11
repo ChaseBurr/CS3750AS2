@@ -12,7 +12,6 @@ window.onload = function () {
 
     canvas.addEventListener('mousedown', onDown, false);
 
-
     drawBoard();
 
 

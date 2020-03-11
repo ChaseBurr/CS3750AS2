@@ -7,12 +7,13 @@ namespace SignalRGame.Hubs
     {
         public async Task SendNewTiles(int x, int y, int r, int g, int b)
         {
-            await Clients.All.SendAsync("AddTile", 1, 1, 255, 255, 255);
+            // syncs new tile with all users
+            await Clients.All.SendAsync("AddTile", x, y, r, g, b);
         }
 
-        public static void main()
-        {
+        // TODO:
+        // Add logic
+        // Change colors for each user
 
-        }
     }
 }

@@ -1,14 +1,16 @@
 ﻿"use strict";
 
+// Create connection
 var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
 
+// Start connection
 connection.start().then(function () {
     console.log("connected");
 });
 
+// Variables
 let canvas, ctx, tileSize;
 let tiles = [];
-
 let bw, bh;
 bw = bh = 800;
 
@@ -48,17 +50,19 @@ function drawGrid() {
     // Set color and display lines
     ctx.strokeStyle = "black";
     ctx.stroke();
+
+    // Draws tiles
 }
 
 // Grabs X and Y cords
 function onDown(event) {
-    let cx = event.pageX - ((window.innerWidth - canvas.width) / 2);
+    let cx = event.pageX;// - ((window.innerWidth - canvas.width) / 2);
     let cy = event.pageY;
 
-    /*alert("X: " + cx + ' Y: ' + cy);*/
-    connection.invoke("SendNewTiles", 1, 1, 255, 255, 255);
+    // Sends updated tile server side
+    connection.invoke("SendNewTiles", 500, 500, 0, 255, 255);
+    for (let i = 0; i < tiles.length; i++) tiles[i].draw(ctx);
 }
-
 
 class tile {
     constructor(x, y, red, green, blue) {
@@ -85,5 +89,3 @@ class tile {
         };
     }
 }
-
-
