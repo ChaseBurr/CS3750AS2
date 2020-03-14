@@ -22,9 +22,9 @@ window.addEventListener('load', function () {
     ctx = canvas.getContext('2d');
 
     tileSize = canvas.width / 16;
-    /*tiles.push(new tile(10, 10, 255, 0, 0));
+    tiles.push(new tile(10, 10, 255, 0, 0));
     tiles.push(new tile(5, 10, 255, 0, 0));
-    tiles.push(new tile(5, 5, 0, 255, 255));*/
+    tiles.push(new tile(5, 5, 0, 255, 255));
     // tiles.push(new tile(5, 10, 300));
     drawGrid();
 });
@@ -32,6 +32,10 @@ window.addEventListener('load', function () {
 connection.on("AddTile", (x, y, r, g, b) => {
     tiles.push(new tile(x, y, r, g, b));
     console(tiles);
+});
+
+connection.on("TestMethod", (test) => {
+    test.forEach(element => console.log(element.red));
 });
 
 function drawGrid() {
@@ -52,16 +56,16 @@ function drawGrid() {
     ctx.stroke();
 
     // Draws tiles
+    for (let i = 0; i < tiles.length; i++) tiles[i].draw(ctx);
 }
 
 // Grabs X and Y cords
 function onDown(event) {
-    let cx = event.pageX;// - ((window.innerWidth - canvas.width) / 2);
+    let cx = event.pageX; // - ((window.innerWidth - canvas.width) / 2);
     let cy = event.pageY;
 
     // Sends updated tile server side
-    connection.invoke("SendNewTiles", 500, 500, 0, 255, 255);
-    for (let i = 0; i < tiles.length; i++) tiles[i].draw(ctx);
+    connection.invoke("SendNewTiles");
 }
 
 class tile {
