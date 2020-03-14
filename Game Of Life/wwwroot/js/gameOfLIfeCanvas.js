@@ -9,46 +9,36 @@ connection.start().then(function () {
 });
 
 // Variables
-let canvas, ctx, tileSize;
-let tiles = [];
-let bw, bh;
-bw = bh = 800;
+let canvas, ctx, cellSize;
+let cellDensity = 16;
+let canvasSize = 800;
+let cells = [];
 
 window.addEventListener('load', function () {
     canvas = document.getElementById('board');
-    canvas.width = canvas.height = 800;
-    canvas.addEventListener('mousedown', onDown, false);
+    canvas.width = canvas.height = canvasSize;
+    canvas.addEventListener('mousedown', function (e) {
+        canvasClick(canvas, e);
+    });
 
     ctx = canvas.getContext('2d');
 
-    tileSize = canvas.width / 16;
-    tiles.push(new tile(10, 10, 255, 0, 0));
-    tiles.push(new tile(5, 10, 255, 0, 0));
-    tiles.push(new tile(5, 5, 0, 255, 255));
-    // tiles.push(new tile(5, 10, 300));
+    cellSize = canvas.width / cellDensity;
     drawGrid();
 });
 
-connection.on("AddTile", (x, y, r, g, b) => {
-    tiles.push(new tile(x, y, r, g, b));
-    console(tiles);
-});
-
-connection.on("TestMethod", (test) => {
-    test.forEach(element => console.log(element.red));
-});
-
+/* Client Display Start */
 function drawGrid() {
     // Draw Vertical lines
-    for (let x = 0; x <= bw; x += 40) {
+    for (let x = 0; x <= canvasSize; x += cellSize) {
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, bh);
+        ctx.lineTo(x, canvasSize);
     }
 
     // Draw Horizontal lines
-    for (let x = 0; x <= bh; x += 40) {
+    for (let x = 0; x <= canvasSize; x += cellSize) {
         ctx.moveTo(0, x);
-        ctx.lineTo(bw, x);
+        ctx.lineTo(canvasSize, x);
     }
 
     // Set color and display lines
@@ -56,19 +46,10 @@ function drawGrid() {
     ctx.stroke();
 
     // Draws tiles
-    for (let i = 0; i < tiles.length; i++) tiles[i].draw(ctx);
+    for (let i = 0; i < cells.length; i++) cells[i].draw(ctx);
 }
 
-// Grabs X and Y cords
-function onDown(event) {
-    let cx = event.pageX; // - ((window.innerWidth - canvas.width) / 2);
-    let cy = event.pageY;
-
-    // Sends updated tile server side
-    connection.invoke("SendNewTiles");
-}
-
-class tile {
+class cell {
     constructor(x, y, red, green, blue) {
         var _this = this;
         (function () {
@@ -86,10 +67,35 @@ class tile {
                 console.log('error');
                 return;
             }
+            let cellBorder = 4;
             ctx.beginPath();
-            ctx.rect(_this.x * tileSize, _this.y * tileSize, tileSize, tileSize);
+            ctx.rect((_this.x * cellSize) + cellBorder, (_this.y * cellSize) + cellBorder, cellSize - (cellBorder * 2), cellSize - (cellBorder * 2));
             ctx.fillStyle = "rgb(" + _this.red + ', ' + _this.green + ', ' + _this.blue + ")";
             ctx.fill();
         };
     }
 }
+/* Client Display End */
+
+
+/* Server Interactions Start */
+connection.on("UpdateCells", (test) => {
+    // empty and fill cell array
+    cells = [];
+    test.forEach(element => cells.push(new cell(element.x, element.y, element.red, element.green, element.blue)));
+    drawGrid();
+});
+
+function canvasClick(canvas, event) {
+    // get click position within canvas element
+    console.log(event.target);
+    let rect = canvas.getBoundingClientRect();
+    let x = Math.floor((event.clientX - rect.left) / cellSize);
+    let y = Math.floor((event.clientY - rect.top) / cellSize);
+
+    /*console.log(x + " - " + y);*/
+
+    // Sends updated tile server side
+    connection.invoke("SendNewTiles", x, y);
+}
+/* Server Interections End */

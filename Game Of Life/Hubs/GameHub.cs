@@ -1,31 +1,27 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace SignalRGame.Hubs 
 {
     public class GameHub : Hub 
     {
-        public async Task SendNewTiles()
+
+        // cell array
+        List<Cell> cells = new List<Cell>();
+
+        public async Task SendNewTiles(int x, int y)
         {
             // syncs new tile with all users
-            /*await Clients.All.SendAsync("AddTile", x, y, r, g, b);*/
-
-            // test array
-            Cell testCell = new Cell();
-            testCell.x = 1;
-            testCell.y = 1;
-            testCell.red = 255;
-            testCell.blue = 0;
-            testCell.green = 255;
-            Cell testCell1 = new Cell();
-            testCell1.x = 1;
-            testCell1.y = 1;
-            testCell1.red = 125;
-            testCell1.blue = 0;
-            testCell1.green = 255;
-            Cell[] cellArray = { testCell, testCell1 };
-            await Clients.All.SendAsync("TestMethod", cellArray);
+            Cell cell = new Cell();
+            cell.x = x;
+            cell.y = y;
+            cell.red = 125;
+            cell.green = 0;
+            cell.blue = 255;
+            cells.Add(cell);
+            await Clients.All.SendAsync("UpdateCells", cells);
         }
 
         // TODO:
@@ -46,32 +42,15 @@ namespace SignalRGame.Hubs
         [JsonProperty("red")]
         public int red { get; set; }
 
-        [JsonProperty("blue")]
-        public int blue { get; set; }
-
         [JsonProperty("green")]
         public int green { get; set; }
+
+        [JsonProperty("blue")]
+        public int blue { get; set; }
 
         // We don't want the client to get the "LastUpdatedBy" property
         [JsonIgnore]
         public string LastUpdatedBy { get; set; }
     }
-
-
-    /*public class Tile
-    {
-        // unable to send via signalr it seems.....
-        int x, y, red, green, blue;
-
-        public Tile(int x, int y, int red, int green, int blue)
-        {
-            this.x = x;
-            this.y = y;
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-        }
-
-    }*/
 
 }
