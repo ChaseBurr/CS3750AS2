@@ -10,7 +10,7 @@ connection.start().then(function () {
 
 // Variables
 let canvas, ctx, cellSize;
-let cellDensity = 16;
+let cellDensity = 20;
 let canvasSize = 800;
 let cells = [];
 
@@ -63,7 +63,7 @@ class cell {
         console.log(this);
 
         this.draw = function (ctx) {
-            if (!_this.x || !_this.y) {
+            if (typeof _this.x == 'undefined' || typeof _this.y == 'undefined') {
                 console.log('error');
                 return;
             }
@@ -96,6 +96,6 @@ function canvasClick(canvas, event) {
     /*console.log(x + " - " + y);*/
 
     // Sends updated tile server side
-    connection.invoke("SendNewTiles", x, y);
+    connection.invoke("SendNewCells", x, y);
 }
 /* Server Interections End */
