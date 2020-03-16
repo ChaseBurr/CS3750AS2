@@ -25,10 +25,19 @@ window.addEventListener('load', function () {
 
     cellSize = canvas.width / cellDensity;
     drawGrid();
+
+    // control events
+    document.getElementById('timeIntervalSlider').addEventListener('change', (e) => {
+        console.log(e.target.value);
+        connection.invoke('ChangeInterval', parseInt(e.target.value));
+    });
 });
 
 /* Client Display Start */
 function drawGrid() {
+    // clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     // Draw Vertical lines
     for (let x = 0; x <= canvasSize; x += cellSize) {
         ctx.moveTo(x, 0);
@@ -60,18 +69,15 @@ class cell {
             _this.blue = blue || 0;
         })();
 
-        console.log(this);
-
         this.draw = function (ctx) {
             if (typeof _this.x == 'undefined' || typeof _this.y == 'undefined') {
-                console.log('error');
+                console.log('Error of the undefined...');
                 return;
             }
             let cellBorder = 4;
             ctx.beginPath();
-            ctx.rect((_this.x * cellSize) + cellBorder, (_this.y * cellSize) + cellBorder, cellSize - (cellBorder * 2), cellSize - (cellBorder * 2));
             ctx.fillStyle = "rgb(" + _this.red + ', ' + _this.green + ', ' + _this.blue + ")";
-            ctx.fill();
+            ctx.fillRect((_this.x * cellSize) + cellBorder, (_this.y * cellSize) + cellBorder, cellSize - (cellBorder * 2), cellSize - (cellBorder * 2));
         };
     }
 }
@@ -79,21 +85,18 @@ class cell {
 
 
 /* Server Interactions Start */
-connection.on("UpdateCells", (test) => {
+connection.on("UpdateCells", (cellsFromServer) => {
     // empty and fill cell array
     cells = [];
-    test.forEach(element => cells.push(new cell(element.x, element.y, element.red, element.green, element.blue)));
+    cellsFromServer.forEach(element => cells.push(new cell(element.x, element.y, element.red, element.green, element.blue)));
     drawGrid();
 });
 
 function canvasClick(canvas, event) {
     // get click position within canvas element
-    console.log(event.target);
     let rect = canvas.getBoundingClientRect();
     let x = Math.floor((event.clientX - rect.left) / cellSize);
     let y = Math.floor((event.clientY - rect.top) / cellSize);
-
-    /*console.log(x + " - " + y);*/
 
     // Sends updated tile server side
     connection.invoke("SendNewCells", x, y);

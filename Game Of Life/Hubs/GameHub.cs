@@ -10,42 +10,51 @@ namespace SignalRGame.Hubs
     {
 
         // color maping
-        private static readonly Dictionary<string, int[]> colorMap = new Dictionary<string, int[]>();
+        private static Dictionary<string, int[]> colorMap = new Dictionary<string, int[]>();
 
         // cell array
         private static List<Cell> cells = new List<Cell>();
 
         public async Task SendNewCells(int x, int y)
         {
+            // check to see if cell exisits
+
             // syncs new tile with all users
             Cell cell = new Cell();
             cell.x = x;
             cell.y = y;
             cell.setColor(colorMap[Context.ConnectionId]);
-            cells.Add(cell);
+            if ((cells.RemoveAll(innerCell => (innerCell.x == x && innerCell.y == y))) == 0) {
+                cells.Add(cell);
+            }
             await Clients.All.SendAsync("UpdateCells", cells);
         }
 
-        // TODO:
-        // Add logic
-        // Change colors for each user
         public override async Task OnConnectedAsync()
         {
+            // Assign colors for each user
             lock (colorMap)
             {
+                // currently does not check if color is in use
                 Random random = new Random();
                 colorMap.Add(Context.ConnectionId, new[] { random.Next(0, 255), random.Next(0, 255), random.Next(0, 255) });
             }
             await Clients.All.SendAsync("UpdateCells", cells);
         }
-
         public override Task OnDisconnectedAsync(Exception exception)
         {
+            // remove users when they disconnect
             lock (colorMap)
             {
                 colorMap.Remove(Context.ConnectionId);
             }
             return base.OnDisconnectedAsync(exception);
+        }
+
+        public void ChangeInterval(int interval)
+        {
+            // changes the update frequency
+            Console.WriteLine(interval);
         }
 
     }
@@ -77,6 +86,18 @@ namespace SignalRGame.Hubs
             this.red = color[0];
             this.green = color[1];
             this.blue = color[2];
+        }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            } else
+            {
+                Cell cell = (Cell)obj;
+                return (x == cell.x) && (y == cell.y);
+            }
         }
     }
 
