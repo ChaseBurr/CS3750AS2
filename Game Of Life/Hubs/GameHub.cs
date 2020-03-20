@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
+using System.Timers;
 
 namespace SignalRGame.Hubs 
 {
@@ -15,6 +16,10 @@ namespace SignalRGame.Hubs
         // cell array
         private static List<Cell> cells = new List<Cell>();
 
+        // timer
+        private static Timer timeKeeper = new Timer(10000);
+
+        /* Client Communication Functions Start */
         public async Task SendNewCells(int x, int y)
         {
             // check to see if cell exisits
@@ -29,7 +34,6 @@ namespace SignalRGame.Hubs
             }
             await Clients.All.SendAsync("UpdateCells", cells);
         }
-
         public override async Task OnConnectedAsync()
         {
             // Assign colors for each user
@@ -39,7 +43,13 @@ namespace SignalRGame.Hubs
                 Random random = new Random();
                 colorMap.Add(Context.ConnectionId, new[] { random.Next(0, 255), random.Next(0, 255), random.Next(0, 255) });
             }
-            await Clients.All.SendAsync("UpdateCells", cells);
+            if (colorMap.Count > 1) await Clients.Client(Context.ConnectionId).SendAsync("UpdateCells", cells); // catch up new clients
+            else
+            {
+                timeKeeper.Elapsed += new ElapsedEventHandler(NextGenerationInterval);
+                timeKeeper.Interval = 1000;
+                timeKeeper.Enabled = false;
+            }
         }
         public override Task OnDisconnectedAsync(Exception exception)
         {
@@ -50,12 +60,43 @@ namespace SignalRGame.Hubs
             }
             return base.OnDisconnectedAsync(exception);
         }
+        /* Client Communication Functions End */
 
+
+        /* Game Control Functions Start */
+        private static void NextGeneration()
+        {
+            // generates the next generation of the game of life
+            Console.WriteLine("testing iteration");
+        }
+        private static void NextGenerationInterval(object source, ElapsedEventArgs e)
+        {
+            // runs nextGeneration Periodically
+            NextGeneration();
+        }
+        public void PlayStopToggle()
+        {
+            // toggles play/stop
+            timeKeeper.Enabled = !timeKeeper.Enabled;
+        }
+        public void PlayStop(Boolean playStop)
+        {
+            // sets to play or to stop
+            timeKeeper.Enabled = playStop;
+        }
         public void ChangeInterval(int interval)
         {
             // changes the update frequency
             Console.WriteLine(interval);
         }
+
+        public void IteratePopulation()
+        {
+            // stops the interval and iterates once
+            PlayStop(false);
+
+        }
+        /* Game Control Functions End */
 
     }
 

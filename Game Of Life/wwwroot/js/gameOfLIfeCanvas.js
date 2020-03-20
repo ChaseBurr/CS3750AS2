@@ -23,14 +23,16 @@ window.addEventListener('load', function () {
 
     ctx = canvas.getContext('2d');
 
-    cellSize = canvas.width / cellDensity;
+    cellSize = Math.floor(canvas.width / cellDensity);
     drawGrid();
 
     // control events
-    document.getElementById('timeIntervalSlider').addEventListener('change', (e) => {
-        console.log(e.target.value);
-        connection.invoke('ChangeInterval', parseInt(e.target.value));
+    document.getElementById('timeIntervalSlider').addEventListener('change', (e) => connection.invoke('ChangeInterval', parseInt(e.target.value)));
+    document.getElementById('pausePlayButton').addEventListener('click', (e) => {
+        e.target.value = ((e.target.value == 'Start') ? 'Stop' : 'Start');
+        connection.invoke('PlayStopToggle');
     });
+    document.getElementById('iterateButton').addEventListener('click', () => connection.invoke('IteratePopulation'));
 });
 
 /* Client Display Start */
