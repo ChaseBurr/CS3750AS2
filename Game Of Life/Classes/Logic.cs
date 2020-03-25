@@ -7,5 +7,6 @@ namespace Game_Of_Life.Classes
 {
     public class Logic
     {
+
     }
 }

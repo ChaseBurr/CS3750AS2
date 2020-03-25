@@ -27,12 +27,9 @@ window.addEventListener('load', function () {
     drawGrid();
 
     // control events
-    document.getElementById('timeIntervalSlider').addEventListener('change', (e) => connection.invoke('ChangeInterval', parseInt(e.target.value)));
-    document.getElementById('pausePlayButton').addEventListener('click', (e) => {
-        e.target.value = ((e.target.value == 'Start') ? 'Stop' : 'Start');
-        connection.invoke('PlayStopToggle');
-    });
-    document.getElementById('iterateButton').addEventListener('click', () => connection.invoke('IteratePopulation'));
+    document.getElementById('timeIntervalSlider').addEventListener('change', (e) => connection.invoke('AutoGenerationInterval', parseInt(e.target.value)));
+    document.getElementById('pausePlayButton').addEventListener('click', (e) => connection.invoke('AutoGenerationToggle'));
+    document.getElementById('iterateButton').addEventListener('mousedown', () => connection.invoke('NextGeneration'));
 });
 
 /* Client Display Start */
@@ -91,8 +88,11 @@ connection.on("UpdateCells", (cellsFromServer) => {
     // empty and fill cell array
     cells = [];
     cellsFromServer.forEach(element => cells.push(new cell(element.x, element.y, element.red, element.green, element.blue)));
+    console.log("updating board");
     drawGrid();
 });
+connection.on("ChangeIntervalSlider", (interval) => document.getElementById("timeIntervalSlider").value = interval);
+connection.on("ChangePlayStopButton", (playStop) => document.getElementById("pausePlayButton").value = (playStop ? "Stop" : "Play"));
 
 function canvasClick(canvas, event) {
     // get click position within canvas element

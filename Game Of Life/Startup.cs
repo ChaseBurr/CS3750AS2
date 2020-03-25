@@ -26,6 +26,7 @@ namespace Game_Of_Life
         {
             services.AddRazorPages();
             services.AddSignalR();
+            services.AddHostedService<GameOfLife>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
