@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
 using System.Threading;
+using Game_Of_Life.Classes;
 
 namespace SignalRGame.Hubs 
 {
@@ -13,12 +14,12 @@ namespace SignalRGame.Hubs
 
         // game variables
         private static Dictionary<string, int[]> colorMap = new Dictionary<string, int[]>(); // user color assignment
-        public static List<Cell> cells = new List<Cell>(); // cell array
+        public static List<Cells> cells = new List<Cells>(); // cell array
 
         /* Game State Communication Functions Start */
         public async Task SendNewCells(int x, int y)
         {
-            Cell cell = new Cell();
+            Cells cell = new Cells();
             cell.x = x;
             cell.y = y;
             cell.setColor(colorMap[Context.ConnectionId]);
@@ -75,48 +76,6 @@ namespace SignalRGame.Hubs
 
     }
 
-
-    public class Cell
-    {
-        [JsonProperty("x")]
-        public int x { get; set; }
-
-        [JsonProperty("y")]
-        public int y { get; set; }
-
-        [JsonProperty("red")]
-        public int red { get; set; }
-
-        [JsonProperty("green")]
-        public int green { get; set; }
-
-        [JsonProperty("blue")]
-        public int blue { get; set; }
-
-        // We don't want the client to get the "LastUpdatedBy" property
-        [JsonIgnore]
-        public string LastUpdatedBy { get; set; }
-
-        public void setColor(int[] color)
-        {
-            this.red = color[0];
-            this.green = color[1];
-            this.blue = color[2];
-        }
-
-        public override bool Equals(object obj)
-        {
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            } else
-            {
-                Cell cell = (Cell)obj;
-                return (x == cell.x) && (y == cell.y);
-            }
-        }
-    }
-
     public class GameOfLife : IHostedService
     {
         private readonly IHubContext<GameHub> Context;
@@ -145,7 +104,7 @@ namespace SignalRGame.Hubs
         }
 
         /* Game Logic Functions Start */
-        public static List<Cell> nextGeneration(List<Cell> cells)
+        public static List<Cells> nextGeneration(List<Cells> cells)
         {
             // Calculates Next Generation of the Game Board
 
