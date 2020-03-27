@@ -29,11 +29,25 @@ namespace Game_Of_Life.Classes
         [JsonIgnore]
         public string LastUpdatedBy { get; set; }
 
+        public Cells(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+
         public void setColor(int[] color)
         {
             this.red = color[0];
             this.green = color[1];
             this.blue = color[2];
+        }
+
+        public int[] getColor()
+        {
+            return new int[] { this.red, this.green, this.blue};
         }
 
         public override bool Equals(object obj)

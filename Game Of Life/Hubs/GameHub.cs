@@ -19,9 +19,7 @@ namespace SignalRGame.Hubs
         /* Game State Communication Functions Start */
         public async Task SendNewCells(int x, int y)
         {
-            Cells cell = new Cells();
-            cell.x = x;
-            cell.y = y;
+            Cells cell = new Cells(x, y);
             cell.setColor(colorMap[Context.ConnectionId]);
             if ((cells.RemoveAll(innerCell => (innerCell.x == x && innerCell.y == y))) == 0)
             {
@@ -107,9 +105,9 @@ namespace SignalRGame.Hubs
         public static List<Cells> nextGeneration(List<Cells> cells)
         {
             // Calculates Next Generation of the Game Board
+            Logic logic = new Logic(cells);
 
-
-            return cells;
+            return logic.getList();
         }
         /* Game Logic Functions End */
 
