@@ -13,29 +13,34 @@ namespace Game_Of_Life.Classes
         public Logic(List<Cells> cells)
         {
             foreach (Cells cell in cells)
-                CurrentGeneration[cell.y + 1, cell.x + 1] = cell;
+                CurrentGeneration[cell.x+1, cell.y+1] = cell;
             doLogic();
         }
 
         private void doLogic()
         {
-            for (int i = 1; i < 19; i++)
+            for (int i = 1; i < 21; i++)
             {
-                for (int j = 1; j < 20; j++)
+                for (int j = 1; j < 21; j++)
                 {
+                    bool alive = false;
+                    if (CurrentGeneration[i, j] != null) alive = true;
                     List<Cells> neighbors = new List<Cells>();
+
                     for (int k = -1; k < 2; k++)
                     {
                         for (int l = -1; l < 2; l++)
                         {
-                            if (k != 0 && l != 0)
+                            if (!(k == 0 && l == 0))
                             {
                                 if (CurrentGeneration[i + k, j + l] != null)
                                     neighbors.Add(CurrentGeneration[i + k, j + l]);
                             }
                         }
                     }
-                    if (neighbors.Count > 2)
+
+
+                    if ((alive && neighbors.Count == 2) || (alive && neighbors.Count == 3) || (!alive && neighbors.Count == 3))
                     {
                         int red = 0;
                         int green = 0;
@@ -46,9 +51,15 @@ namespace Game_Of_Life.Classes
                             green += cell.green;
                             blue += cell.blue;
                         }
-                        NextGeneration[i, j] = new Cells(i, j);
+                        red /= neighbors.Count;
+                        green /= neighbors.Count;
+                        blue /= neighbors.Count;
+                        NextGeneration[i, j] = new Cells(i - 1, j - 1);
                         NextGeneration[i, j].setColor(new int[] { red, green, blue });
                     }
+
+                    //if (neighbors.Count == 2 || neighbors.Count == 3)
+                    //    NextGeneration[i, j] = new Cells(i, j);
                 }
             }
         }
@@ -58,9 +69,9 @@ namespace Game_Of_Life.Classes
             List<Cells> cells = new List<Cells>();
 
             // logic to return list of cells
-            for (int i = 1; i < 22; i++)
+            for (int i = 1; i < 21; i++)
             {
-                for (int j = 1; j < 22; j++)
+                for (int j = 1; j < 21; j++)
                 {
                     if (NextGeneration[i, j] != null)
                     {
